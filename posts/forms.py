@@ -9,10 +9,7 @@ class PostForm(forms.ModelForm):
         model = Post
         fields = ('group', 'text', 'image')
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 60bbec9238e8b566653de0fdb1132a9f88c60c0e
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
@@ -20,7 +17,3 @@ class CommentForm(forms.ModelForm):
         widgets = {
             'text': Textarea(attrs={'cols': 80, 'rows': 5}),
         }
-<<<<<<< HEAD
-=======
-
->>>>>>> 60bbec9238e8b566653de0fdb1132a9f88c60c0e
