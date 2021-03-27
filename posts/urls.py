@@ -18,8 +18,12 @@ urlpatterns = [
     path('<str:username>/<int:post_id>/comment', views.add_comment,
          name='add_comment'),
 
+<<<<<<< HEAD
     path('<str:username>/follow/', views.profile_follow,
          name='profile_follow'),
+=======
+    path('<str:username>/follow/', views.profile_follow, name='profile_follow'), 
+>>>>>>> 60bbec9238e8b566653de0fdb1132a9f88c60c0e
     path('<str:username>/unfollow/', views.profile_unfollow,
          name='profile_unfollow'),
 ]
