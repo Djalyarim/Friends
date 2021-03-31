@@ -1,3 +1,5 @@
+from http import HTTPStatus
+
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
@@ -14,10 +16,14 @@ class PostURLTests(TestCase):
 
         cls.guest_client = Client()
         cls.user = User.objects.create_user(username='Djalyarim')
-        cls.user2 = User.objects.create_user(username='Djalyarim2')
         cls.authorized_client = Client()
+        cls.authorized_client.force_login(cls.user)
+        cls.user_2 = User.objects.create_user(username='Djalyarim2')
+        cls.authorized_client_2 = Client()
+        cls.authorized_client_2.force_login(cls.user_2)
         cls.another_author = Client()
         cls.authorized_client.force_login(cls.user)
+        cls.authorized_client_2.force_login(cls.user_2)
         cls.group = Group.objects.create(
             title='future', description='про фьюче', slug='test_slug'
         )
@@ -32,85 +38,106 @@ class PostURLTests(TestCase):
     def test_homepage(self):
         """Страница / доступна любому пользователю."""
         response = self.guest_client.get('/')
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_post_slug_page_unauthorized(self):
         """Страница /group/<slug:slug>/ доступна любому пользователю."""
         response = self.guest_client.get('/group/test_slug/')
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_about_author_unauthorized(self):
         """Страница /about/author доступна любому пользователю."""
         response = self.guest_client.get('/about/author/')
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_about_tech_unauthorized(self):
         """Страница /about/tech доступна любому пользователю."""
         response = self.guest_client.get('/about/tech/')
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
 
     #  Блок проверки ошибок
     def test_error_404(self):
+        """ Страница не найдена """
         response = self.guest_client.get('/wrong/')
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
 
     #  Блок профайла
-    def test_profile(self):
-        """Страница profile доступна любому пользователю."""
+    def test_profile_authorized(self):
+        """Страница profile доступна авторизованному пользователю."""
         response = PostURLTests.authorized_client.get(
             reverse('profile', kwargs={'username': self.user.username})
         )
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
 
-    def test_profile_post_id(self):
-        """Страница profile/post_id доступна любому пользователю."""
+    def test_profile_guest(self):
+        """Страница profile доступна неавторизованному пользователю."""
+        response = PostURLTests.guest_client.get(
+            reverse('profile', kwargs={'username': self.user.username})
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_profile_post_id_authorized(self):
+        """Страница profile/post_id доступна авторизированному пользователю."""
         response = PostURLTests.authorized_client.get(
             reverse(
                 'post', kwargs={'username': self.user.username,
                                 'post_id': self.post.id}
             )
         )
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
 
-    def test_profile_post_id_edit(self):
-        """Страница profile/post_id/edit доступна любому пользователю."""
+    def test_profile_post_id_guest(self):
+        """ Страница profile/post_id доступна неавторизированному """
+        """ пользователю. """
         response = PostURLTests.guest_client.get(
             reverse(
-                'post_edit',
-                kwargs={'username': self.user.username,
-                        'post_id': self.post.id},
+                'post', kwargs={'username': self.user.username,
+                                'post_id': self.post.id}
             )
         )
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
 
-    def test_profile_post_id_edit_author(self):
-        """Страница profile/post_id/edit доступна автору поста."""
+    def test_profile_post_id_edit_authorized_and_author(self):
+        """Страница profile/post_id/edit доступна только авторизированному """
+        """ пользователю и только автору поста"""
         response = PostURLTests.authorized_client.get(
             reverse(
                 'post_edit',
-                kwargs={'username': self.user.username,
+                kwargs={'username': self.user,
                         'post_id': self.post.id},
             )
         )
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
 
-    def test_profile_post_id_edit_not_author(self):
-        """Страница profile/post_id/edit доступна не автору поста."""
-        self.another_author.login(username=self.user2.username)
-        response = self.authorized_client.get(
+    def test_profile_post_id_edit_authorized_not_author(self):
+        """Страница profile/post_id/edit не доступна авторизированному """
+        """ пользователю и не автору поста"""
+        response = PostURLTests.authorized_client_2.get(
             reverse(
                 'post_edit',
-                kwargs={'username': self.user.username,
+                kwargs={'username': self.user_2,
                         'post_id': self.post.id},
             )
         )
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, HTTPStatus.FOUND)
+
+    def test_profile_post_id_edit_guest(self):
+        """Страница profile/post_id/edit не доступна не авторизированному """
+        """ пользователю """
+        response = PostURLTests.guest_client.get(
+            reverse(
+                'post_edit',
+                kwargs={'username': self.user,
+                        'post_id': self.post.id},
+            )
+        )
+        self.assertEqual(response.status_code, HTTPStatus.FOUND)
 
     #  Блок проверки доступа авторизованных пользователей
     def test_post_new_page_authorized(self):
         """Страница /new/ доступна авторизованному пользователю."""
         response = self.authorized_client.get('/new/')
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
 
     #  Блок проверки редиректов для неавторизованных пользователей
     def test_add_page_redirect(self):

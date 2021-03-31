@@ -19,14 +19,14 @@
         <ul class="list-group list-group-flush">
           <li class="list-group-item">
             <div class="h6 text-muted">
-              Подписчиков: {{ following_count }} <br />
-              Подписан: {{ follower_count }}
+              Подписчиков: {{ profile.following.count }}<br />
+              Подписан: {{ profile.follower.count }}
             </div>
           </li>
           <li class="list-group-item">
             <div class="h6 text-muted">
               <!-- Количество записей -->
-              Записей: {{ posts_count }}
+              Записей: {{ page.object_list.count}}
 
             </div>
             {% if profile != user %}
@@ -51,15 +51,11 @@
 
     <div class="col-md-9">
 
-      <!-- Начало блока с отдельным постом -->
+      <!-- Начало блока с постами -->
 
       {% for post in page %}
       {% include "post_item.html" with post=post %}
       {% endfor %}
-
-      <!-- Конец блока с отдельным постом -->
-
-      <!-- Остальные посты -->
 
       {% include "paginator.html" %}
     </div>
