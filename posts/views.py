@@ -2,8 +2,8 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect, render
 
-from .forms import CommentForm, PostForm
-from .models import Follow, Group, Post, User
+from .forms import CommentForm, PostForm, ProfileForm
+from .models import Follow, Group, Post, Profile_id, User
 
 
 def index(request):
@@ -33,18 +33,44 @@ def new_post(request):
     if request.method != 'POST':
         form = PostForm()
         return render(request, 'post_add.html', {'form': form})
-    form = PostForm(request.POST)
+    form = PostForm(request.POST, files=request.FILES or None)
     if form.is_valid():
         post = form.save(commit=False)
         post.author = request.user
         post.save()
         return redirect('index')
     return render(request, 'post_add.html', {'form': form})
+ 
+# @login_required
+# def profile_edit(request, username):
+
+@login_required
+def profile_edit(request):
+    profile = Profile_id.objects.get_or_create(author=request.user)[0]
+    if request.method != 'POST':
+        form = ProfileForm()
+        return render(request, 'profile_edit.html', {'form': form})
+    # __import__('pdb').set_trace()
+    form = ProfileForm(request.POST or None, files=request.FILES or None, instance=profile)
+    if not form.is_valid:
+        return render(request, 'profile_edit.html', {'form': form})
+    form.save()
+    # if form.is_valid():
+    #     profile = form.save(commitç=False)
+    #     profile.author = request.user
+    #     profile.save()
+    #     return redirect('profile', username=request.user.username)
+    # return render(request, 'profile_edit.html', {'form': form})
+    return redirect('profile', username=request.user.username)
+    # form.save()
+    # return redirect('profile', username=request.user.username)
+
 
 
 def profile(request, username):
     user = get_object_or_404(User, username=username)
     posts = Post.objects.filter(author=user)
+    # profile_id = get_object_or_404(Profile_id, author=request.user)
     paginator = Paginator(posts, 10)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
@@ -57,6 +83,7 @@ def profile(request, username):
         request,
         'profile.html',
         {
+            # 'profile_id': profile_id,
             'profile': user,
             'user': request.user,
             'page': page,
@@ -65,14 +92,19 @@ def profile(request, username):
     )
 
 
+
+
+
+
 def post_view(request, username, post_id):
+    user = get_object_or_404(User, username=username)
     post = get_object_or_404(Post, author__username=username, pk=post_id)
     form = CommentForm()
     return render(
         request,
         'post.html',
         {
-            'author': post.author,
+            'profile': user,
             'post': post,
             'comments': post.comments.all(),
             'form': form,
@@ -94,7 +126,7 @@ def add_comment(request, username, post_id):
 
 @login_required
 def post_edit(request, username, post_id):
-    post = get_object_or_404(Post, id=post_id)
+    post = get_object_or_404(Post, id=post_id, author__username=username)
     if request.user != post.author:
         return redirect('post', username=username, post_id=post_id)
     form = PostForm(request.POST or None,

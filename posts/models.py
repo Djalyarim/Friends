@@ -50,3 +50,9 @@ class Follow(models.Model):
                              related_name='follower')
     author = models.ForeignKey(User, on_delete=models.CASCADE,
                                related_name='following')
+
+
+class Profile_id(models.Model):
+    text_profile = models.TextField(blank=True, null=True)
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='author')
+    image_author = models.ImageField(upload_to='users/', blank=True)
