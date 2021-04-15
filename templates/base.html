@@ -7,22 +7,33 @@
   <title>{% block title %}The Last Social Media You'll Ever Need{% endblock %} | Yatube</title>
   <!-- Загрузка статики -->
   {% load static %}
-  <link rel="stylesheet" href="{% static 'bootstrap/dist/css/bootstrap.min.css' %}">
-  <script src="{% static 'jquery/dist/jquery.min.js' %}"></script>
-  <script src="{% static 'bootstrap/dist/js/bootstrap.min.js' %}"></script>
+  <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+  <link rel="stylesheet" href="{% static 'assets/css/main.css' %}">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+  <noscript>
+    <link rel="stylesheet" href="{% static 'assets/css/noscript.css' %}" /></noscript>
 </head>
 
-<body>
-  {% include 'nav.html' %}
-  <main>
-    <div class="container">
-      {% block content %}
-      <!-- Содержимое страницы -->
-      {% endblock content %}
-    </div>
-  </main>
-
+<body class="is-preload">
+  <div id="page-wrapper">
+    {% include 'nav.html' %}
+    <main>
+      <div class="container">
+        {% block content %}
+        <!-- Содержимое страницы -->
+        {% endblock content %}
+      </div>
+    </main>
+  </div>
   {% include 'footer.html' %}
+  <script src="{% static 'assets/js/jquery.min.js' %}"></script>
+  <script src="{% static 'assets/js/jquery.scrolly.min.js' %}"></script>
+  <script src="{% static 'assets/js/jquery.dropotron.min.js' %}"></script>
+  <script src="{% static 'assets/js/jquery.scrollex.min.js' %}"></script>
+  <script src="{% static 'assets/js/browser.min.js' %}"></script>
+  <script src="{% static 'assets/js/breakpoints.min.js' %}"></script>
+  <script src="{% static 'assets/js/util.js' %}"></script>
+  <script src="{% static 'assets/js/main.js' %}"></script>
 </body>
 
 </html>

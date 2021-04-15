@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
 {% load user_filters %}
-<form method="post" enctype="multipart/form-data" action="{% url 'profile_edit' %}">
-    <!-- {% csrf_token %} -->
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
     {% for field in form %}
     <div class="form-group row" aria-required={% if field.field.required %}"true"{% else %}"false"{% endif %}>
         <label for="{{ field.id_for_label }}"
@@ -16,10 +16,13 @@
         </div>
     </div>
     {% endfor %}
+    <br>
     <div class="col-md-6 offset-md-4">
-        <a class="btn btn-primary" href="{% url 'profile' user %}" role="button">
+        <!-- <a class="btn btn-primary" href="{% url 'profile' user %}" role="button"> -->
+        <button type="submit" class="button primary small">
             Сохранить
-        </a>
+        </button>
+        <!-- </a> -->
     </div>
 </form>
 {% endblock %}

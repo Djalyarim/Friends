@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Comment, Follow, Group, Post, Profile_id
+from .models import Comment, Follow, Group, Like, Post, Profile_id
 
 
 class PostAdmin(admin.ModelAdmin):
@@ -28,8 +28,13 @@ class ProfileAdmin(admin.ModelAdmin):
     list_display = ('pk', 'text_profile', 'author')
 
 
+class LikeAdmin(admin.ModelAdmin):
+    list_display = ('pk', 'user', 'post')
+
+
 admin.site.register(Post, PostAdmin)
 admin.site.register(Group, GroupAdmin)
 admin.site.register(Comment, CommentAdmin)
 admin.site.register(Follow, FollowAdmin)
 admin.site.register(Profile_id, ProfileAdmin)
+admin.site.register(Like, LikeAdmin)

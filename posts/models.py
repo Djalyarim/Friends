@@ -27,13 +27,13 @@ class Post(models.Model):
         null=True,
         related_name='posts',
     )
-    image = models.ImageField(upload_to='posts/', blank=True, null=True)
+    image = models.ImageField(upload_to='posts/', blank=True, null=True, verbose_name='Картинка')
 
     class Meta:
         ordering = ('-pub_date', 'id')
 
     def __str__(self):
-        return self.text
+        return self.text[:15]
 
 
 class Comment(models.Model):
@@ -53,6 +53,13 @@ class Follow(models.Model):
 
 
 class Profile_id(models.Model):
-    text_profile = models.TextField(blank=True, null=True)
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='author')
-    image_author = models.ImageField(upload_to='users/', blank=True)
+    text_profile = models.TextField(blank=True, null=True, verbose_name='Поле для текста')
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='author_img')
+    image_author = models.ImageField(upload_to='users/', blank=True, verbose_name='Ваша аватарка')
+
+
+class Like(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE,
+                             related_name='liker')
+    post = models.ForeignKey(Post, blank=True, null=True, on_delete=models.CASCADE,
+                             related_name='liking')

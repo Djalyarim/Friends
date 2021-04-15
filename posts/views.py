@@ -3,7 +3,7 @@ from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import CommentForm, PostForm, ProfileForm
-from .models import Follow, Group, Post, Profile_id, User
+from .models import Follow, Group, Like, Post, Profile_id, User
 
 
 def index(request):
@@ -12,7 +12,7 @@ def index(request):
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
     return render(request, 'index.html',
-                  {'page': page})
+                  {'page': page, })
 
 
 def group_posts(request, slug):
@@ -27,7 +27,6 @@ def group_posts(request, slug):
         {'group': group, 'page': page}
     )
 
-
 @login_required
 def new_post(request):
     if request.method != 'POST':
@@ -40,9 +39,7 @@ def new_post(request):
         post.save()
         return redirect('index')
     return render(request, 'post_add.html', {'form': form})
- 
-# @login_required
-# def profile_edit(request, username):
+
 
 @login_required
 def profile_edit(request):
@@ -50,27 +47,22 @@ def profile_edit(request):
     if request.method != 'POST':
         form = ProfileForm()
         return render(request, 'profile_edit.html', {'form': form})
-    # __import__('pdb').set_trace()
     form = ProfileForm(request.POST or None, files=request.FILES or None, instance=profile)
     if not form.is_valid:
         return render(request, 'profile_edit.html', {'form': form})
     form.save()
-    # if form.is_valid():
-    #     profile = form.save(commitç=False)
-    #     profile.author = request.user
-    #     profile.save()
-    #     return redirect('profile', username=request.user.username)
-    # return render(request, 'profile_edit.html', {'form': form})
     return redirect('profile', username=request.user.username)
-    # form.save()
-    # return redirect('profile', username=request.user.username)
-
 
 
 def profile(request, username):
+    """ Пользователь request.user.username зашел в профиль username """
     user = get_object_or_404(User, username=username)
     posts = Post.objects.filter(author=user)
-    # profile_id = get_object_or_404(Profile_id, author=request.user)
+    if Profile_id.objects.filter(author=user).exists():
+        profile_id = get_object_or_404(Profile_id, author=user)
+    else:
+        Profile_id.objects.create(text_profile='Напиши что-нибудь', image_author='default_avatar.jpg', author=user)
+        profile_id = get_object_or_404(Profile_id, author=user)
     paginator = Paginator(posts, 10)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
@@ -83,7 +75,7 @@ def profile(request, username):
         request,
         'profile.html',
         {
-            # 'profile_id': profile_id,
+            'profile_id': profile_id,
             'profile': user,
             'user': request.user,
             'page': page,
@@ -92,21 +84,18 @@ def profile(request, username):
     )
 
 
-
-
-
-
 def post_view(request, username, post_id):
     user = get_object_or_404(User, username=username)
     post = get_object_or_404(Post, author__username=username, pk=post_id)
+    profile_id = get_object_or_404(Profile_id, author=user)
     form = CommentForm()
     return render(
         request,
         'post.html',
         {
             'profile': user,
+            'profile_id': profile_id,
             'post': post,
-            'comments': post.comments.all(),
             'form': form,
         }
     )
@@ -136,6 +125,17 @@ def post_edit(request, username, post_id):
     form.save()
     return redirect('post', username=username, post_id=post_id)
 
+@login_required
+def like(request, username, post_id):
+    last_visited_url = request.META.get('HTTP_REFERER')
+    post = Post.objects.filter(id=post_id, author__username=username)[0]
+    if not Like.objects.filter(user=request.user, post=post).exists():
+        Like.objects.create(user=request.user, post=post)
+    else:
+        Like.objects.filter(user=request.user, post=post).delete()
+ 
+
+    return redirect(last_visited_url)
 
 @login_required
 def follow_index(request):

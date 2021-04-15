@@ -18,8 +18,10 @@
           {{ error|escape }}
         </div>
         {% endfor %}
+
         <form method="post" enctype="multipart/form-data">
           {% csrf_token %}
+
           {% for field in form %}
           <div class="form-group row" aria-required={% if field.field.required %}"true"{% else %}"false"{% endif %}>
             <label for="{{ field.id_for_label }}"
@@ -33,8 +35,9 @@
             </div>
           </div>
           {% endfor %}
+          <br>
           <div class="col-md-6 offset-md-4">
-            <button type="submit" class="btn btn-primary">
+            <button type="submit" class="button primary small">
               {% if form.text.value %}
               Редактировать
               {% else %}

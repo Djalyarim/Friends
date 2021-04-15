@@ -6,9 +6,15 @@
     <img class="card-img" src="{{ im.url }}" />
     {% endthumbnail %}
     <!-- Отображение текста поста -->
-    <div class="card-body">
+    <div class="card text-white bg-dark mb-3">
         <p class="card-text">
             <!-- Ссылка на автора через @ -->
+            <!-- <div class="col-sx-3 mb-1 mt-1">
+                {% load thumbnail %}
+                {% thumbnail profile_id.image_author "200x200" as im %}
+                <img class="card-img" src="{{ im.url }}" />
+                {% endthumbnail %}
+            </div> -->
             <a name="post_{{ post.id }}" href="{% url 'profile' post.author.username %}">
                 <strong class="d-block text-gray-dark">@{{ post.author }}</strong>
             </a>
@@ -16,31 +22,51 @@
         </p>
 
         <!-- Если пост относится к какому-нибудь сообществу, то отобразим ссылку на него через # -->
-        {% if post.group %}
-        <a class="card-link muted" href="{% url 'group_posts' post.group.slug %}">
-            <strong class="d-block text-gray-dark">#{{ post.group.title }}</strong>
-        </a>
-        {% endif %}
+
 
         <!-- Отображение ссылки на комментарии -->
-        <div class="d-flex justify-content-between align-items-center">
+        <div class="d-flex justify-content-between align-items-center" style="margin-top: 10px;">
             <div class="btn-group">
-                {% if post.comments.exists %}
+                {% if post.comments.exists and not form %}
                 <div>
-                    Комментариев: {{ post.comments.count }}
+                    <a href="{% url 'post' post.author.username post.id %}">
+                        <i class="far fa-comment"> {{ post.comments.count }}</i></a>
                 </div>
                 &emsp;
                 {% endif %}
-                {% if not form %}
-                <a class="btn btn-sm btn-primary" href="{% url 'post' post.author.username post.id %}" role="button">
-                    Добавить комментарий
-                </a>
-                {% endif %}
+                <!-- Отбражение лайков -->
+                <div>
+                    <a href="{% url 'like' post.author.username post.id %}">
+                        <i class="fas fa-heart"> {{ post.liking.count }}</i>
+                    </a>
+                    <!-- Возвращение прокрутки на исходное место -->
+                    <script>
+                        document.addEventListener("DOMContentLoaded", function (event) {
+                            var scrollpos = localStorage.getItem('scrollpos');
+                            if (scrollpos) window.scrollTo(0, scrollpos);
+                        });
+
+                        window.onbeforeunload = function (e) {
+                            localStorage.setItem('scrollpos', window.scrollY);
+                        };
+                    </script>
+                </div>
                 &emsp;
+
                 <!-- Ссылка на редактирование поста для автора -->
                 {% if user == post.author %}
-                <a class="btn btn-sm btn-info" href="{% url 'post_edit' post.author.username post.id %}" role="button">
-                    Редактировать пост
+                <div>
+                    <a href="{% url 'post_edit' post.author.username post.id %}">
+                        <i class="far fa-edit"></i>
+                    </a>
+                </div>
+                &emsp;
+                {% endif %}
+
+                <!-- Ссылка на группу автора -->
+                {% if post.group %}
+                <a class="card-link" href="{% url 'group_posts' post.group.slug %}">
+                    #{{ post.group.title }}
                 </a>
                 {% endif %}
             </div>
@@ -49,4 +75,5 @@
             <small class="text-muted">{{ post.pub_date }}</small>
         </div>
     </div>
+    <hr style="border-width: 3px;">
 </div>

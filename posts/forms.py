@@ -22,4 +22,4 @@ class CommentForm(forms.ModelForm):
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = Profile_id
-        fields = {'text_profile', 'image_author',}
+        fields = ('text_profile', 'image_author',)

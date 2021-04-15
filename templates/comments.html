@@ -12,7 +12,8 @@
                 {{ field|addclass:"form-control" }}
                 {% endfor %}
             </div>
-            <button type="submit" class="btn btn-primary">Отправить</button>
+            <br>
+            <button type="submit" class="button primary small">Отправить</button>
         </div>
     </form>
 </div>
@@ -20,14 +21,28 @@
 
 <!-- Комментарии -->
 {% for item in post.comments.all %}
-<div class="media card mb-4">
-    <div class="media-body card-body">
-        <h5 class="mt-0">
-            <a href="{% url 'profile' item.author.username %}" name="comment_{{ item.id }}">
-                {{ item.author.username }}
-            </a>
-        </h5>
-        <p>{{ item.text | linebreaksbr }}</p>
-    </div>
+<div class="media">
+    {% for picture in item.author.author_img.all %}
+    {% load thumbnail %}
+    {% thumbnail picture.image_author "50x50" upscale=False as im %}
+    <span class="image left"><img src="{{ im.url }}" /> </span>
+    {% endthumbnail %}
+    {% endfor %}
+    <p>
+        <strong>{{ item.author.username }}</strong> <br> {{ item.text | linebreaksbr }}
+    </p>
+
 </div>
+<!-- <div
+                class="media card mb-4">
+                <div class="media-body card-body">
+                    <h5 class="mt-0">
+                        <a href="{% url 'profile' item.author.username %}" name="comment_{{ item.id }}">
+                            {{ item.author.username }}
+                        </a>
+                    </h5>
+                    <a>{{ item.text | linebreaksbr }}</a>
+                    <hr />
+                </div>
+</div> -->
 {% endfor %}

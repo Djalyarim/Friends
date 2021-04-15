@@ -1,48 +1,58 @@
-<div class="card">
-    <div class="card-body">
-        <div class="h2">
-            <!-- Имя автора -->
-            {% load thumbnail %}
-            {% thumbnail profile_id.image_author "100x100" crop="center" upscale=True as im %}
-            <img class="card-img" src="{{ im.url }}" />
-            {% endthumbnail %}
-
-            {{ profile.get_full_name }}
-        </div>
-        <div class="h3 text-muted">
-            <!-- username автора -->
-            {{ profile.username }}
-        </div>
-    </div>
-    <ul class="list-group list-group-flush">
-        <li class="list-group-item">
-            <div class="h6 text-muted">
-                Подписчиков: {{ profile.following.count }} <br />
-                Подписан: {{ profile.follower.count }}
+<section>
+    <div class="card">
+        <div class="card-body">
+            <div class="h2">
+                <!-- Имя автора -->
+                {% load thumbnail %}
+                {% thumbnail profile_id.image_author "500x500" crop="center" upscale=True as im %}
+                <img class="card-img" src="{{ im.url }}" />
+                {% endthumbnail %}
             </div>
-        </li>
-        <li class="list-group-item">
-            <div class="h6 text-muted">
-                <!-- Количество записей -->
-                Записей: {{ user.posts.count }}
-
+            {{ default_avatar }}
+            <div style="text-align:justify;">
+                <em>
+                    <h5>{{ profile_id.text_profile }}</h5>
+                </em>
             </div>
-            {% if profile != user %}
-        <li class="list-group-item">
+            <div class="h2">
+                {{ profile.get_full_name }}
+            </div>
+            <div class="h3 text-muted">
+                <!-- username автора -->
+                {{ profile.username }}
+            </div>
+        </div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+                <div class="h6 text-muted">
+                    Подписчиков:
+                    {{ profile.following.count }} <br />
+                    Подписан: {{ profile.follower.count }}
+                </div>
+            </li>
+            <li class="list-group-item">
+                <div class="h6 text-muted">
+                    <!-- Количество записей -->
+                    Записей: {{ profile.posts.count }}
 
-            {% if following %}
-            <a class="btn btn-sm btn-light" href="{% url 'profile_unfollow' profile.username %}" role="button">
-                Отписаться
-            </a>
-            {% else %}
-            <a class="btn btn-sm btn-primary" href="{% url 'profile_follow' profile.username %}" role="button">
-                Подписаться
-            </a>
+                </div>
+                {% if profile != user %}
+            <li class="list-group-item">
+
+                {% if following %}
+                <a class="button fit small" href="{% url 'profile_unfollow' profile.username %}" role="button">
+                    Отписаться
+                </a>
+                {% else %}
+                <a class="button fit small" href="{% url 'profile_follow' profile.username %}" role="button">
+                    Подписаться
+                </a>
+                {% endif %}
+
+            </li>
             {% endif %}
-
-        </li>
-        {% endif %}
-        </li>
-    </ul>
-</div>
-</div>
+            </li>
+        </ul>
+    </div>
+    </div>
+</section>
