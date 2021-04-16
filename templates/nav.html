@@ -4,8 +4,18 @@
   {% if user.is_authenticated %}
   <p style=margin-left:180px;>Добро пожаловать, {{ user.username }}</p>
   {% endif %}
+
   <nav id="nav">
+
     <ul>
+      <li>
+        <form class="form-inline my-2 my-lg-0" action="{% url 'search' %}" method="get">
+          <input class="form-control mr-sm-2" type="search" name="q" placeholder="Поиск" aria-label="Search">
+        </form>
+      </li>
+
+
+      <li><a href="{% url 'group_id' %}">Сообщества</a></li>
       {% if user.is_authenticated %}
       <li>
         <a href="{% url 'profile' request.user.username %}">Профиль</a>

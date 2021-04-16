@@ -24,7 +24,7 @@
 <div class="media">
     {% for picture in item.author.author_img.all %}
     {% load thumbnail %}
-    {% thumbnail picture.image_author "50x50" upscale=False as im %}
+    {% thumbnail picture.image_author "55x55" upscale=False as im %}
     <span class="image left"><img src="{{ im.url }}" /> </span>
     {% endthumbnail %}
     {% endfor %}
@@ -33,16 +33,5 @@
     </p>
 
 </div>
-<!-- <div
-                class="media card mb-4">
-                <div class="media-body card-body">
-                    <h5 class="mt-0">
-                        <a href="{% url 'profile' item.author.username %}" name="comment_{{ item.id }}">
-                            {{ item.author.username }}
-                        </a>
-                    </h5>
-                    <a>{{ item.text | linebreaksbr }}</a>
-                    <hr />
-                </div>
-</div> -->
+
 {% endfor %}

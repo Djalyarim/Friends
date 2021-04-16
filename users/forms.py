@@ -8,3 +8,9 @@ class CreationForm(UserCreationForm):
     class Meta:
         model = User
         fields = ('first_name', 'last_name', 'username', 'email')
+        error_messages = {
+            'password_mismatch': 'Что за нафиг?',
+        }
+
+
+

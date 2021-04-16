@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %} FRIENDS {% endblock %}
+{% load cache %}
+
+{% block content %}
+<div class="container">
+  {% include "menu.html" with index=True %}
+  <br>
+  <header>
+    <h3> Результаты поиска: </h3>
+  </header>
+  {% for item in results %}
+  {% include "post_item.html" with post=item %}
+  {% endfor %}
+</div>
+{% endblock %}

@@ -27,6 +27,16 @@ def group_posts(request, slug):
         {'group': group, 'page': page}
     )
 
+
+def group_id(request):
+    group = Group.objects.all()
+    paginator = Paginator(group, 10)
+    page_number = request.GET.get('page')
+    page = paginator.get_page(page_number)
+    return render(request, 'group_id.html',
+                  {'page': page, })
+
+
 @login_required
 def new_post(request):
     if request.method != 'POST':
@@ -40,7 +50,21 @@ def new_post(request):
         return redirect('index')
     return render(request, 'post_add.html', {'form': form})
 
+@login_required
+def delete_post(request, post_id, username):
+    last_visited_url = request.META.get('HTTP_REFERER')
+    Post.objects.filter(author=request.user, pk=post_id).delete()
+    return redirect(last_visited_url)
 
+
+def search(request):
+    last_visited_url = request.META.get('HTTP_REFERER')
+    if 'q' in request.GET and request.GET['q']:
+        search_words = request.GET['q']
+        results = Post.objects.filter(text__contains=search_words)
+        return render(request, 'search_results.html', {'results': results})
+    else:
+        return redirect(last_visited_url)
 @login_required
 def profile_edit(request):
     profile = Profile_id.objects.get_or_create(author=request.user)[0]

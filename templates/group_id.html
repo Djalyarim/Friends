@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %} FRIENDS {% endblock %}
+{% load cache %}
+
+{% block content %}
+<div class="container">
+    {% include "menu.html" with index=True %}
+    <br>
+    <header>
+        <h3> Наши сообщества:</h3>
+    </header>
+    {% for group in page %}
+    <ul>
+        <a class="card-link" href="{% url 'group_posts' group.slug %}">{{ group.title }}</a>
+
+    </ul>
+
+    {% endfor %}
+    </header>
+    <!-- Вывод паджинатора -->
+    {% if page.has_other_pages %}
+    {% include "paginator.html"%}
+    {% endif %}
+</div>
+{% endblock %}

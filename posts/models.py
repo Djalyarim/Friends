@@ -14,6 +14,7 @@ class Group(models.Model):
 
 
 class Post(models.Model):
+    title = models.CharField(max_length=100, blank=False, verbose_name='Заголовок')
     text = models.TextField(help_text='Создайте здесь свой пост',
                             verbose_name='Пост')
     pub_date = models.DateTimeField('date published', auto_now_add=True)
