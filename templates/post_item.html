@@ -17,9 +17,9 @@
                 {% endthumbnail %}
                 {% endfor%}
                 <!-- Отображение имени пользователя, даты поста -->
-                <span name="post_{{ post.id }}" href="{% url 'profile' post.author.username %}">
-                    <strong>&ensp;{{ post.author }}</strong>
-                    <small class="text-muted">&ensp;&ensp;{{ post.pub_date }}</small>
+                <a name="post_{{ post.id }}" href="{% url 'profile' post.author.username %}">
+                    {{ post.author }}</a>
+                <small class="text-muted">&ensp;&ensp;{{ post.pub_date }}</small>
                 </span>
                 {% if post.group %}
                 <strong>&ensp;&ensp;Сообщество:&ensp;</strong>
