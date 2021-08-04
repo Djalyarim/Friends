@@ -50,6 +50,7 @@ def new_post(request):
         return redirect('index')
     return render(request, 'post_add.html', {'form': form})
 
+
 @login_required
 def delete_post(request, post_id, username):
     last_visited_url = request.META.get('HTTP_REFERER')
@@ -65,13 +66,16 @@ def search(request):
         return render(request, 'search_results.html', {'results': results})
     else:
         return redirect(last_visited_url)
+
+
 @login_required
 def profile_edit(request):
     profile = Profile_id.objects.get_or_create(author=request.user)[0]
     if request.method != 'POST':
         form = ProfileForm()
         return render(request, 'profile_edit.html', {'form': form})
-    form = ProfileForm(request.POST or None, files=request.FILES or None, instance=profile)
+    form = ProfileForm(request.POST or None, files=request.FILES or None,
+                       instance=profile)
     if not form.is_valid:
         return render(request, 'profile_edit.html', {'form': form})
     form.save()
@@ -85,7 +89,9 @@ def profile(request, username):
     if Profile_id.objects.filter(author=user).exists():
         profile_id = get_object_or_404(Profile_id, author=user)
     else:
-        Profile_id.objects.create(text_profile='Напиши что-нибудь', image_author='default_avatar.jpg', author=user)
+        Profile_id.objects.create(text_profile='Напиши что-нибудь',
+                                  image_author='default_avatar.jpg',
+                                  author=user)
         profile_id = get_object_or_404(Profile_id, author=user)
     paginator = Paginator(posts, 10)
     page_number = request.GET.get('page')
@@ -111,6 +117,10 @@ def profile(request, username):
 def post_view(request, username, post_id):
     user = get_object_or_404(User, username=username)
     post = get_object_or_404(Post, author__username=username, pk=post_id)
+    if not Profile_id.objects.filter(author=user).exists():
+        Profile_id.objects.create(text_profile='Напиши что-нибудь',
+                                  image_author='default_avatar.jpg',
+                                  author=user)
     profile_id = get_object_or_404(Profile_id, author=user)
     form = CommentForm()
     return render(
@@ -149,6 +159,7 @@ def post_edit(request, username, post_id):
     form.save()
     return redirect('post', username=username, post_id=post_id)
 
+
 @login_required
 def like(request, username, post_id):
     last_visited_url = request.META.get('HTTP_REFERER')
@@ -157,9 +168,8 @@ def like(request, username, post_id):
         Like.objects.create(user=request.user, post=post)
     else:
         Like.objects.filter(user=request.user, post=post).delete()
- 
-
     return redirect(last_visited_url)
+
 
 @login_required
 def follow_index(request):

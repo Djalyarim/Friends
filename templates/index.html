@@ -4,8 +4,13 @@
 
 {% block content %}
 <div class="container">
+  <!-- <span class="image fit main"><img src="" alt="" /> -->
   {% include "menu.html" with index=True %}
   <br>
+
+
+  <!-- your code inside -->
+
   <!-- Вывод ленты записей -->
   {% for post in page %}
   {% include "post_item.html" with post=post %}
@@ -16,5 +21,7 @@
   {% if page.has_other_pages %}
   {% include "paginator.html"%}
   {% endif %}
+  <!-- </span> -->
+
 </div>
 {% endblock %}

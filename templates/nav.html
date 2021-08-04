@@ -1,8 +1,12 @@
 <!-- Header -->
 <header id="header">
-  <h1 id="logo"><a href="{% url 'index' %}">FRIENDS</a></h1>
+  <h1 id="logo"><a href="{% url 'index' %}">AXIOM</a></h1>
   {% if user.is_authenticated %}
-  <p style=margin-left:180px;>Добро пожаловать, {{ user.username }}</p>
+  <ul>
+    <li>
+      <p style=margin-left:180px;>Добро пожаловать, {{ user.username }}</p>
+    </li>
+  </ul>
   {% endif %}
 
   <nav id="nav">

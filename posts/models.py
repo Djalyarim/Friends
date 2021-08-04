@@ -14,7 +14,8 @@ class Group(models.Model):
 
 
 class Post(models.Model):
-    title = models.CharField(max_length=100, blank=False, verbose_name='Заголовок')
+    title = models.CharField(max_length=100, blank=False,
+                             verbose_name='Заголовок')
     text = models.TextField(help_text='Создайте здесь свой пост',
                             verbose_name='Пост')
     pub_date = models.DateTimeField('date published', auto_now_add=True)
@@ -28,7 +29,8 @@ class Post(models.Model):
         null=True,
         related_name='posts',
     )
-    image = models.ImageField(upload_to='posts/', blank=True, null=True, verbose_name='Картинка')
+    image = models.ImageField(upload_to='posts/', blank=True, null=True,
+                              verbose_name='Картинка')
 
     class Meta:
         ordering = ('-pub_date', 'id')
@@ -50,17 +52,20 @@ class Follow(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,
                              related_name='follower')
     author = models.ForeignKey(User, on_delete=models.CASCADE,
-                               related_name='following')
+                                  related_name='following')
 
 
 class Profile_id(models.Model):
-    text_profile = models.TextField(blank=True, null=True, verbose_name='Поле для текста')
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='author_img')
-    image_author = models.ImageField(upload_to='users/', blank=True, verbose_name='Ваша аватарка')
+    text_profile = models.TextField(blank=True, null=True,
+                                    verbose_name='Поле для текста')
+    author = models.ForeignKey(User, on_delete=models.CASCADE,
+                               related_name='author_img')
+    image_author = models.ImageField(upload_to='users/', blank=True,
+                                     verbose_name='Ваша аватарка')
 
 
 class Like(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,
                              related_name='liker')
-    post = models.ForeignKey(Post, blank=True, null=True, on_delete=models.CASCADE,
-                             related_name='liking')
+    post = models.ForeignKey(Post, blank=True, null=True,
+                             on_delete=models.CASCADE, related_name='liking')

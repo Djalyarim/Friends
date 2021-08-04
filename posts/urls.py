@@ -2,6 +2,7 @@ from django.urls import path
 
 from . import views
 
+
 urlpatterns = [
     path('', views.index, name='index'),
     path('group/<slug:slug>/', views.group_posts, name='group_posts'),
@@ -22,5 +23,5 @@ urlpatterns = [
          name='profile_follow'),
     path('<str:username>/unfollow/', views.profile_unfollow,
          name='profile_unfollow'),
-    path('<str:username>/<int:post_id>/like', views.like, name='like')
+    path('<str:username>/<int:post_id>/like', views.like, name='like'),
 ]

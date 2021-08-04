@@ -3,8 +3,7 @@ from http import HTTPStatus
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
-
-from posts.models import Group, Post
+from posts.models import Group, Post, Profile_id
 
 User = get_user_model()
 
@@ -22,8 +21,8 @@ class PostURLTests(TestCase):
         cls.authorized_client_2 = Client()
         cls.authorized_client_2.force_login(cls.user_2)
         cls.another_author = Client()
-        cls.authorized_client.force_login(cls.user)
-        cls.authorized_client_2.force_login(cls.user_2)
+        # cls.authorized_client.force_login(cls.user)
+        # cls.authorized_client_2.force_login(cls.user_2)
         cls.group = Group.objects.create(
             title='future', description='про фьюче', slug='test_slug'
         )
@@ -33,6 +32,8 @@ class PostURLTests(TestCase):
             author=cls.user,
             group=cls.group,
         )
+
+        cls.profile = Profile_id.objects.create(author=cls.user)
 
     #  Блок проверки доступа неавторизованных пользователей
     def test_homepage(self):
@@ -53,6 +54,17 @@ class PostURLTests(TestCase):
     def test_about_tech_unauthorized(self):
         """Страница /about/tech доступна любому пользователю."""
         response = self.guest_client.get('/about/tech/')
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+    
+    def test_profile_post_id_guest(self):
+        """ Страница profile/post_id доступна неавторизированному """
+        """ пользователю. """
+        response = self.guest_client.get(
+            reverse(
+                'post', kwargs={'username': self.user.username,
+                                'post_id': self.post.id}
+            )
+        )
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
     #  Блок проверки ошибок
@@ -86,16 +98,6 @@ class PostURLTests(TestCase):
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
-    def test_profile_post_id_guest(self):
-        """ Страница profile/post_id доступна неавторизированному """
-        """ пользователю. """
-        response = PostURLTests.guest_client.get(
-            reverse(
-                'post', kwargs={'username': self.user.username,
-                                'post_id': self.post.id}
-            )
-        )
-        self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_profile_post_id_edit_authorized_and_author(self):
         """Страница profile/post_id/edit доступна только авторизированному """
@@ -115,7 +117,7 @@ class PostURLTests(TestCase):
         response = PostURLTests.authorized_client_2.get(
             reverse(
                 'post_edit',
-                kwargs={'username': self.user_2,
+                kwargs={'username': self.user,
                         'post_id': self.post.id},
             )
         )
