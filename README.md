@@ -24,7 +24,7 @@
 <h2>Установка проекта:</h2>
 
 ### Клонируйте данный репозиторий
-```git clone https://github.com/Djalyarim/hw05_final```
+```git clone https://github.com/Djalyarim/Friends```
 ### Создайте и активируйте виртуальное окружение
 ```
 python -m venv venv<br>
